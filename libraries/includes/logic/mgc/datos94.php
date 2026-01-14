@@ -3,11 +3,11 @@ require('pdo-wrapper.php');
 
 use CloudDB\DB\Database;
 
-$flgServer = 0;
+$flgServer = 1;
 
 if ($flgServer == 1) {
     $options = [
-        'host' => " 193.203.166.97",
+        'host' => "localhost",
         'database' => "u214874994_alina_cloud",
         'username' => "u214874994_alina_cloud",
         'password' => '4=KRSh:;#1Sh'
