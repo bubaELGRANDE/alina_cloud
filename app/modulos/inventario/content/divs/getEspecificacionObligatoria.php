@@ -1,13 +1,13 @@
 <?php
 require_once("../../../../../libraries/includes/logic/mgc/datos94.php");
 @session_start();
-header('Content-Type: application/json; charset=utf-8');
+
 $inventarioCategoriaId = $_POST["inventarioCategoriaId"] ?? 0;
 
 $data = $cloud->rows("SELECT o.inventarioCategoriaId,o.catProdEspecificacionId,o.ordenSKU,o.esObligatoria,ep.tipoEspecificacion,ep.nombreProdEspecificacion,ep.tipoMagnitud
 FROM cat_categorias_especificaciones_obligatorias o
 LEFT JOIN cat_productos_especificaciones ep ON ep.catProdEspecificacionId = o.catProdEspecificacionId
-WHERE o.flgDelete = ? AND o.inventarioCategoriaId = ?", [0, $inventarioCategoriaId]);
+WHERE o.flgDelete = ? AND O.inventarioCategoriaId = ?", [0, $inventarioCategoriaId]);
 
 if (!empty($data)) {
     foreach ($data as $item) {
@@ -24,3 +24,4 @@ if (!empty($data)) {
 } else {
     echo json_encode(array("id" => NULL, "text" => "Sin resultados"));
 }
+?>
