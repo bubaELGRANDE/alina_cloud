@@ -1,7 +1,7 @@
 <?php
 require_once("../../../../../libraries/includes/logic/mgc/datos94.php");
 @session_start();
-
+header('Content-Type: application/json; charset=utf-8');
 $inventarioCategoriaId = $_POST["inventarioCategoriaId"] ?? 0;
 
 $data = $cloud->rows("SELECT o.inventarioCategoriaId,o.catProdEspecificacionId,o.ordenSKU,o.esObligatoria,ep.tipoEspecificacion,ep.nombreProdEspecificacion,ep.tipoMagnitud
