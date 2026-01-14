@@ -7,7 +7,7 @@
     if(isset($_SESSION["inactividad"])) {
         if(isset($_SESSION["usuarioId"])) {
             if($_SESSION["flgPassword"] == "1" && basename($_SERVER['PHP_SELF']) != "index.php") {
-                header("Location: portal/app/"); // redirect a cloud, cambiar nombre en server de alina-cloud a cloud
+                header("Location: /portal/app/"); // redirect a cloud, cambiar nombre en server de alina-cloud a cloud
             } else {
                 // Mantener sesión
                 // Permisos
