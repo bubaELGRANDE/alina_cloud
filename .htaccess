@@ -1,13 +1,29 @@
-Options -Indexes -MultiViews
+# ocultar el contenido de la carpeta si no tiene index
+Options -Indexes
 
 RewriteEngine On
-RewriteBase /portal/
 
 DirectoryIndex login.php index.php
 
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
+# ignorar reglas y permitir el directorio - archivo
+RewriteRule ^libraries/includes/logic/session/logout.php - [L]
 
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^(.+?)/?$ $1.php [L,QSA]
+# remover php y definir las index page
+# Actual server wamp
+# RewriteRule ^([^/.]+)$ $1.php [L]
+
+# Nuevas reglas lamp
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^.]+)$ $1.php [L]
+
+# permitir ajax a cualquier directorio
+RewriteCond %{HTTP:X-Requested-With} !=XMLHttpRequest
+RewriteCond %{HTTP:X-REQUESTED-WITH} !^(XMLHttpRequest)$
+
+# no permitir acceder a estos directorios por url
+# RewriteRule ^libraries/.*\.(php|rb|py)$ - [F,L,NC]
+# RewriteRule ^app/modulos/.*\.(php|rb|py)$ - [F,L,NC]
+
+# paginas de errores
+#ErrorDocument 403 https:///
