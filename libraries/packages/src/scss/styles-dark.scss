@@ -1,0 +1,596 @@
+//vars override
+//colores - Tema Cobre Rojo (Modo Oscuro)
+$cobre-oscuro:                #8B4513;  // Saddle Brown
+$cobre-medio:                  #B87333;  // Copper
+$cobre-claro:                  #CD853F;  // Peru
+$cobre-rojizo:                 #C04000;  // Copper Red
+$cobre-dorado:                 #D2691E;  // Chocolate
+$cobre-brillante:              #E6A857;  // Brighter copper for dark mode
+
+// Colores principales para modo oscuro
+$indupal: $cobre-medio;
+$primary: $cobre-brillante;  // Más brillante para contraste en modo oscuro
+$primary2: $cobre-claro;
+$primary-dark: $cobre-oscuro;
+$primary-light: $cobre-brillante;
+$primary-accent: $cobre-rojizo;
+
+// Colores del sistema
+$secondary: #6c757d;
+$success: #28a745;
+$info: #17a2b8;
+$warning: #ffc107;
+$danger: #dc3545;
+
+// Colores adicionales (mantener compatibilidad)
+$hidropal: #253776;
+$agropal: #b5bd10;
+$stihl: #F37A1F;
+$karcher: #FFED00;
+//typo
+/*$headings-font-weight:      600;
+$headings-color:            $indupal;
+$font-family-sans-serif:    'Hind', sans-serif;*/
+
+$theme-colors: (
+    'primary': $indupal,
+    'secondary': $secondary,
+    'success': $success,
+    'info': $info,
+    'warning': $warning,
+    'danger': $danger,
+    'light': #fbfbfb,
+    'dark': #262626,
+    'hidropal': $hidropal,
+    'agropal': $agropal,
+    'stihl': $stihl,
+    'pedrollo': #ff142f,
+    'pearl': #0093bd,
+    'franklin-electric': #005daa,
+    'karcher': #ffed00,
+    'kohler': #081f2c,
+    'baldor': #ff000f
+);
+
+//variables darks
+
+$light: #212529;
+$body-bg: #262626;
+$body-color: #fff;
+
+//dropdown
+$dropdown-color: $body-color;
+$dropdown-bg: $light;
+$dropdown-link-hover-bg: #495057;
+
+//inputs
+$input-placeholder-color: #343a40;
+
+//modal
+$modal-content-color: $body-color;
+$modal-content-bg: $body-bg;
+
+$swal2-white: $light;
+$swal2-success: $success;
+$swal2-error: $danger;
+$swal2-warning: $warning;
+$swal2-info: $info;
+$swal2-question: $primary2;
+
+// Variables modernas de Bootstrap para modo oscuro
+$border-radius:               .5rem;
+$border-radius-sm:            .375rem;
+$border-radius-lg:            .75rem;
+$box-shadow:                  0 0.125rem 0.25rem rgba(184, 115, 51, 0.2);
+$box-shadow-sm:               0 0.0625rem 0.125rem rgba(184, 115, 51, 0.15);
+$box-shadow-lg:               0 1rem 3rem rgba(184, 115, 51, 0.3);
+$transition-base:             all 0.3s ease-in-out;
+$swal2-background: $modal-content-color;
+//forms
+$form-label-color: #dee2e6;
+$input-bg: #212529;
+
+// cards
+$card-bg: #343a40;
+$card-cap-bg: #495057;
+
+//buttons
+$nav-link-disabled-color: #343a40;
+$pagination-disabled-bg: #343a40;
+$pagination-bg: #263238;
+$nav-link-color: $primary;
+
+$fa-font-path: "../fonts/webfonts";
+$fa-font-display: swap;
+$font-weight-bolder: 700;
+
+$accordion-button-icon: none;
+$accordion-button-active-icon: none;
+
+//slick
+$slick-arrow-color : #fff;
+
+//imports
+@import "bootstrap/bootstrap.scss";
+@import "mdb/mdb.free.scss";
+@import "awesome/fontawesome.scss";
+//@import "sweetalert2/sweetalert2.scss";
+@import "sweetalert2/themes/dark/dark.scss";
+@import "select2/core.scss";
+//@import "toastr.scss";
+
+@import "awesome/solid.scss";
+@import "awesome/regular.scss";
+@import "awesome/brands.scss";
+//smartphoto
+@import "smartphoto.scss";
+//slick
+@import "slick/slick.scss";
+@import "slick/slick-theme.scss";
+//custom
+@import "custom-styles.scss";
+
+.swal2-popup {
+    background: $modal-content-bg !important;
+    color: $modal-content-color !important;
+
+    .swal2-title,
+    .swal2-content {
+        color: $modal-content-color !important;
+    }
+}
+
+.fa-inverse {
+    color: $body-bg !important;
+}
+
+/* .form-outline{
+    span{
+        background: $dropdown-link-hover-bg !important;
+    }
+} */
+
+.nav-tabs {
+    .nav-link {
+        color: #f8f9fa;
+
+        &:hover {
+            background: $pagination-disabled-bg;
+            color: #fff;
+        }
+    }
+}
+
+.nav-pills {
+    .nav-link {
+        color: #f8f9fa;
+        background: #495057;
+
+        &:hover {
+            background: $pagination-disabled-bg;
+            color: #fff;
+        }
+    }
+}
+
+.floatbar #pin-sidebar {
+    background: $pagination-disabled-bg;
+}
+
+.select2-selection--single,
+.select2-dropdown,
+.select2-selection--multiple {
+    background-color: $body-bg !important;
+    color: #f8f9fa;
+
+}
+.select2-container--disabled {
+    .select2-selection--single {
+        background-color: #343a40 !important;
+    }
+}
+
+.select2-search__field::placeholder {
+    color: $gray-600;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    background: #121416;
+    color: #fff;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #f8f9fa !important;
+}
+
+.select2-results__option[aria-selected="true"] {
+    background: $gray-700;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: $gray-800;
+    color: #f8f9fa;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    color: #f8f9fa;
+}
+
+.datepicker {
+    table {
+        background: #000;
+
+        tr td.day:hover,
+        .datepicker table tr td.day.focused {
+            background: $gray-900;
+        }
+    }
+}
+
+.form-control:disabled,
+.form-control::file-selector-button {
+    background: $gray-800 !important;
+}
+
+.form-outline .form-control:disabled,
+.form-outline .form-control.disabled,
+.form-outline .form-control[readonly] {
+    background: $gray-800 !important;
+}
+
+//productos
+.productItem {
+    border: 1px solid $gray-700;
+    background: $gray-900;
+
+    &:hover {
+        background: $gray-800;
+        border-color: $gray-700;
+
+        .titulo,
+        .bottom-card {
+            border-color: $gray-500;
+        }
+    }
+}
+
+// cumpleaños
+
+.cumple {
+    background: $blue-700 url('../../../libraries/resources/images/icons/birthday-cake.png') no-repeat bottom right/25%;
+}
+
+.cumpleHoy {
+    background: rgb(8, 66, 152);
+    background: linear-gradient(90deg, rgba(8, 66, 152, 0) 0%, rgba(50, 103, 182, 1) 40%, rgba(50, 103, 182, 1) 50%, rgba(50, 103, 182, 1) 60%, rgba(8, 66, 152, 0) 100%);
+}
+
+.cumpleAnteriores {
+    background: $blue-gray-700 url('../../../libraries/resources/images/icons/birthday-cake.png') no-repeat bottom right/25%;
+}
+
+// directorio
+
+.front {
+    background: $blue-gray-900;
+    color: #fff;
+}
+
+.card {
+    background-color: #343a40 !important;
+
+    .card-header,.card-footer {
+        background: $card-cap-bg;
+    }
+}
+
+// consulta existencias
+.prod-ficha {
+    border: 1px solid $gray-700;
+}
+
+.prod-collapse {
+    &:hover {
+        background: $blue-800;
+    }
+}
+
+.prod-collapse-active {
+    background: $blue-800;
+}
+
+.prod-bodegas {
+    .prod-bodega-item {
+        border-bottom: 1px solid $gray-700;
+
+        &:hover {
+            background: $gray-800;
+        }
+    }
+
+}
+
+.prod-totales {
+    background: $gray-700;
+}
+
+// Estilos modernos personalizados - Tema Cobre Rojo (Modo Oscuro)
+:root {
+    --primary-color: #{$cobre-brillante};
+    --primary-dark: #{$cobre-oscuro};
+    --primary-light: #{$cobre-claro};
+    --primary-accent: #{$cobre-rojizo};
+    --primary-gradient: linear-gradient(135deg, #{$cobre-brillante} 0%, #{$cobre-medio} 100%);
+}
+
+// Botones modernos con gradientes y efectos (modo oscuro)
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    box-shadow: 0 4px 15px rgba(230, 168, 87, 0.3);
+    transition: all 0.3s ease;
+    color: #212529;
+    font-weight: 600;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(230, 168, 87, 0.4);
+        background: linear-gradient(135deg, #{$cobre-claro} 0%, #{$cobre-brillante} 100%);
+        color: #212529;
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background: var(--primary-gradient);
+        border-color: var(--primary-color);
+        color: #212529;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(230, 168, 87, 0.3);
+    }
+}
+
+// Cards modernos (modo oscuro)
+.card {
+    border: none;
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+    transition: all 0.3s ease;
+    background-color: $card-bg !important;
+    
+    &:hover {
+        box-shadow: $box-shadow-lg;
+        transform: translateY(-5px);
+    }
+    
+    .card-header {
+        background: var(--primary-gradient);
+        color: #212529;
+        border-radius: $border-radius-lg $border-radius-lg 0 0;
+        font-weight: 600;
+    }
+}
+
+// Formularios modernos (modo oscuro)
+.form-control, .form-select {
+    border-radius: $border-radius;
+    border: 2px solid $gray-700;
+    transition: all 0.3s ease;
+    background-color: $input-bg;
+    color: $body-color;
+    
+    &:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(230, 168, 87, 0.25);
+        background-color: $input-bg;
+        color: $body-color;
+    }
+}
+
+.form-label {
+    font-weight: 500;
+    color: $form-label-color;
+}
+
+// Badges modernos (modo oscuro)
+.badge {
+    border-radius: $border-radius;
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+}
+
+.badge-primary, .bg-primary {
+    background: var(--primary-gradient) !important;
+    color: #212529 !important;
+}
+
+// Navbar moderno (modo oscuro)
+.navbar {
+    box-shadow: $box-shadow;
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    
+    &:hover {
+        color: var(--primary-color) !important;
+    }
+    
+    &.active {
+        color: var(--primary-color) !important;
+        font-weight: 600;
+    }
+}
+
+// Tablas modernas (modo oscuro)
+.table {
+    border-radius: $border-radius;
+    overflow: hidden;
+    color: $body-color;
+    
+    thead {
+        background: var(--primary-gradient);
+        color: #212529;
+        
+        th {
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+    }
+    
+    tbody tr {
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background-color: rgba(230, 168, 87, 0.1);
+            transform: scale(1.01);
+        }
+    }
+}
+
+// Alertas modernas (modo oscuro)
+.alert {
+    border-radius: $border-radius-lg;
+    border: none;
+    box-shadow: $box-shadow-sm;
+}
+
+.alert-primary {
+    background: linear-gradient(135deg, rgba(230, 168, 87, 0.2) 0%, rgba(184, 115, 51, 0.2) 100%);
+    color: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+}
+
+// Modales modernos (modo oscuro)
+.modal-content {
+    border-radius: $border-radius-lg;
+    border: none;
+    box-shadow: $box-shadow-lg;
+    background-color: $modal-content-bg;
+    color: $modal-content-color;
+}
+
+.modal-header {
+    background: var(--primary-gradient);
+    color: #212529;
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
+    
+    .btn-close {
+        filter: brightness(0);
+    }
+}
+
+// Progress bars modernos (modo oscuro)
+.progress {
+    border-radius: $border-radius;
+    height: 0.75rem;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+    background-color: $gray-800;
+    
+    .progress-bar {
+        background: var(--primary-gradient);
+    }
+}
+
+// Links modernos (modo oscuro)
+a {
+    color: var(--primary-color);
+    transition: all 0.2s ease;
+    
+    &:hover {
+        color: var(--primary-light);
+        text-decoration: none;
+    }
+}
+
+// Input groups modernos (modo oscuro)
+.input-group-text {
+    background: rgba(230, 168, 87, 0.2);
+    border-color: $gray-700;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+// Paginación moderna (modo oscuro)
+.pagination {
+    .page-link {
+        color: var(--primary-color);
+        border-radius: $border-radius;
+        margin: 0 2px;
+        transition: all 0.2s ease;
+        background-color: $pagination-bg;
+        border-color: $gray-700;
+        
+        &:hover {
+            background: var(--primary-color);
+            color: #212529;
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+        }
+    }
+    
+    .page-item.active .page-link {
+        background: var(--primary-gradient);
+        border-color: var(--primary-color);
+        color: #212529;
+    }
+}
+
+// Dropdowns modernos (modo oscuro)
+.dropdown-menu {
+    border-radius: $border-radius-lg;
+    border: none;
+    box-shadow: $box-shadow-lg;
+    margin-top: 0.5rem;
+    background-color: $dropdown-bg;
+}
+
+.dropdown-item {
+    transition: all 0.2s ease;
+    color: $dropdown-color;
+    
+    &:hover {
+        background: rgba(230, 168, 87, 0.2);
+        color: var(--primary-color);
+    }
+    
+    &.active {
+        background: var(--primary-gradient);
+        color: #212529;
+    }
+}
+
+// Actualizar colores de cumpleaños con tema cobre
+.cumple {
+    background: rgba(230, 168, 87, 0.3) url('../../../libraries/resources/images/icons/birthday-cake.png') no-repeat bottom right/25%;
+}
+
+.cumpleHoy {
+    background: linear-gradient(90deg, rgba(230, 168, 87, 0) 0%, rgba(230, 168, 87, 0.6) 40%, rgba(184, 115, 51, 0.8) 50%, rgba(230, 168, 87, 0.6) 60%, rgba(230, 168, 87, 0) 100%);
+}
+
+.cumpleAnteriores {
+    background: rgba(184, 115, 51, 0.2) url('../../../libraries/resources/images/icons/birthday-cake.png') no-repeat bottom right/25%;
+}
+
+// Actualizar prod-collapse con tema cobre
+.prod-collapse {
+    &:hover {
+        background: rgba(230, 168, 87, 0.2);
+    }
+}
+
+.prod-collapse-active {
+    background: rgba(230, 168, 87, 0.3);
+}

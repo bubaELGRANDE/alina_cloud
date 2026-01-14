@@ -1,0 +1,302 @@
+//vars override
+//colores - Tema Cobre Rojo
+$cobre-oscuro:                #8B4513;  // Saddle Brown
+$cobre-medio:                 #B87333;  // Copper
+$cobre-claro:                 #CD853F;  // Peru
+$cobre-rojizo:                #C04000;  // Copper Red
+$cobre-dorado:                #D2691E;  // Chocolate
+
+// Colores principales
+$primary: $cobre-medio;
+$primary-dark: $cobre-oscuro;
+$primary-light: $cobre-claro;
+$primary-accent: $cobre-rojizo;
+
+// Colores del sistema
+$secondary: #6c757d;
+$success: #28a745;
+$info: #17a2b8;
+$warning: #ffc107;
+$danger: #dc3545;
+
+// Variables modernas de Bootstrap
+$input-btn-padding-y:         .5em;
+$input-btn-padding-x:         1em;
+$border-radius:               .5rem;
+$border-radius-sm:            .375rem;
+$border-radius-lg:            .75rem;
+$box-shadow:                  0 0.125rem 0.25rem rgba(184, 115, 51, 0.075);
+$box-shadow-sm:               0 0.0625rem 0.125rem rgba(184, 115, 51, 0.075);
+$box-shadow-lg:               0 1rem 3rem rgba(184, 115, 51, 0.175);
+$transition-base:             all 0.3s ease-in-out;
+
+
+$fa-font-path:              "../fonts/webfonts";
+$fa-font-display:           swap;
+$font-weight-bolder:        700;
+
+$accordion-button-icon:         none;
+$accordion-button-active-icon:  none;
+
+//galery
+$backdrop-color: rgba(0, 0, 0, 0.8);
+
+//imports
+@import "bootstrap/bootstrap.scss";
+@import "mdb/mdb.free.scss";
+@import "awesome/fontawesome.scss";
+@import "sweetalert2/sweetalert2.scss";
+@import "select2/core.scss";
+//@import "toastr.scss";
+
+@import "awesome/solid.scss";
+@import "awesome/regular.scss";
+@import "awesome/brands.scss";
+
+//smartphoto
+@import "smartphoto.scss";
+
+//slick
+@import "slick/slick.scss";
+@import "slick/slick-theme.scss";
+
+//custom
+@import "custom-styles.scss";
+
+// Estilos modernos personalizados - Tema Cobre Rojo
+:root {
+    --primary-color: #{$cobre-medio};
+    --primary-dark: #{$cobre-oscuro};
+    --primary-light: #{$cobre-claro};
+    --primary-accent: #{$cobre-rojizo};
+    --primary-gradient: linear-gradient(135deg, #{$cobre-medio} 0%, #{$cobre-rojizo} 100%);
+}
+
+// Botones modernos con gradientes y efectos
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    box-shadow: 0 4px 15px rgba(184, 115, 51, 0.3);
+    transition: all 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(184, 115, 51, 0.4);
+        background: linear-gradient(135deg, #{$cobre-claro} 0%, #{$cobre-medio} 100%);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background: var(--primary-gradient);
+        border-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(184, 115, 51, 0.3);
+    }
+}
+
+// Cards modernos
+.card {
+    border: none;
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        box-shadow: $box-shadow-lg;
+        transform: translateY(-5px);
+    }
+    
+    .card-header {
+        background: var(--primary-gradient);
+        color: white;
+        border-radius: $border-radius-lg $border-radius-lg 0 0;
+        font-weight: 600;
+    }
+}
+
+// Formularios modernos
+.form-control, .form-select {
+    border-radius: $border-radius;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+    
+    &:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(184, 115, 51, 0.25);
+    }
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+// Badges modernos
+.badge {
+    border-radius: $border-radius;
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+}
+
+.badge-primary, .bg-primary {
+    background: var(--primary-gradient) !important;
+}
+
+// Navbar moderno
+.navbar {
+    box-shadow: $box-shadow;
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    
+    &:hover {
+        color: var(--primary-color) !important;
+    }
+    
+    &.active {
+        color: var(--primary-color) !important;
+        font-weight: 600;
+    }
+}
+
+// Tablas modernas
+.table {
+    border-radius: $border-radius;
+    overflow: hidden;
+    
+    thead {
+        background: var(--primary-gradient);
+        color: white;
+        
+        th {
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+    }
+    
+    tbody tr {
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background-color: rgba(184, 115, 51, 0.05);
+            transform: scale(1.01);
+        }
+    }
+}
+
+// Alertas modernas
+.alert {
+    border-radius: $border-radius-lg;
+    border: none;
+    box-shadow: $box-shadow-sm;
+}
+
+.alert-primary {
+    background: linear-gradient(135deg, rgba(184, 115, 51, 0.1) 0%, rgba(192, 64, 0, 0.1) 100%);
+    color: var(--primary-dark);
+    border-left: 4px solid var(--primary-color);
+}
+
+// Modales modernos
+.modal-content {
+    border-radius: $border-radius-lg;
+    border: none;
+    box-shadow: $box-shadow-lg;
+}
+
+.modal-header {
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
+    
+    .btn-close {
+        filter: brightness(0) invert(1);
+    }
+}
+
+// Progress bars modernos
+.progress {
+    border-radius: $border-radius;
+    height: 0.75rem;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    
+    .progress-bar {
+        background: var(--primary-gradient);
+    }
+}
+
+// Links modernos
+a {
+    color: var(--primary-color);
+    transition: all 0.2s ease;
+    
+    &:hover {
+        color: var(--primary-accent);
+        text-decoration: none;
+    }
+}
+
+// Input groups modernos
+.input-group-text {
+    background: rgba(184, 115, 51, 0.1);
+    border-color: #e0e0e0;
+    color: var(--primary-dark);
+    font-weight: 500;
+}
+
+// Paginación moderna
+.pagination {
+    .page-link {
+        color: var(--primary-color);
+        border-radius: $border-radius;
+        margin: 0 2px;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+    }
+    
+    .page-item.active .page-link {
+        background: var(--primary-gradient);
+        border-color: var(--primary-color);
+    }
+}
+
+// Dropdowns modernos
+.dropdown-menu {
+    border-radius: $border-radius-lg;
+    border: none;
+    box-shadow: $box-shadow-lg;
+    margin-top: 0.5rem;
+}
+
+.dropdown-item {
+    transition: all 0.2s ease;
+    
+    &:hover {
+        background: rgba(184, 115, 51, 0.1);
+        color: var(--primary-dark);
+    }
+    
+    &.active {
+        background: var(--primary-gradient);
+        color: white;
+    }
+}

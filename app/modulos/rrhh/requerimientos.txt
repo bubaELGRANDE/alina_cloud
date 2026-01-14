@@ -1,0 +1,235 @@
+Requerimientos: 23-07-2021
+NO APLICAN POR EL MOMENTO:
+1. Interfaz del perfil del empleado o de solicitud de empleo (para que alguien nuevo pueda llenar su información similar al formato físico de la solicitud de empleo).
+2. Considerar estado si ya lo contrataron o es candidato (candidato en caso que llene la solicitud de empleo, después alguien debe "cambiar ese estado").
+3. Generar enlaces temporales para que cada persona llene su información con una contraseña temporal (enlaces sin necesidad de un inicio de sesión, solamente solicitar contraseña, puede ser el DUI de cada empleado).
+8. Enviar notificación al administrador de correos electrónicos de desactivar el correo electrónico cuando se dé de baja a un empleado.
+
+SI APLICAN:
+6. Historial de sanciones, permisos, vacaciones (crud y menú propio para cada una).
+7. Vigencias de sanciones (fecha de inicio, fecha de finalización de la sanción - consultar en el formulario en físico).
+10. Evaluar relaciones familiares en la misma empresa (hermanos, tíos, etc).
+12. Reiniciar permisos de usuario si se le cambia el expediente (flgDelete = 1 a todos sus permisos actuales).
+13. Considerar el recontratable aunque su contratable fuese no.
+14. Poder editar su justificación de la baja, por si después suceden otras cosas (aunque ya se haya hecho el insert).
+17. Tipos de vacaciones:
+	- Vacaciones colectivas.
+	- Vacaciones anuales.
+	- Vacaciones de goteo = solicita X días de su total.
+	- Cuando son de corrido (completa) cuentan los fines de semana
+18. Tipos de sanciones:
+	- Sanción verbal.
+	- Escrita.
+	- Previa / grave con repercusión.
+19. Considerar una interfaz para ver los contratos que ya expiraron (periodo determinado, servicios profesionales, periodo de prueba, interinato) y poderle cambiar su estado/tipo de contrato o extenderle la fecha de finalización.
+
+-----------------------------------------------------------------
+
+--- Logica de Organigrama ---
+
+- th_expediente_organigrama
+expedienteOrganigramaId
+organigramaSuperiorId
+nivelOrganigrama - Control automático 1 -> N
+tipoOrganigrama - Grupo, Expediente
+idTipoOrganigrama - organigramaGrupoId o expedienteId: dependiendo el tipoOrganigrama
+auditoria
+
+expedienteOrganigramaId = 1
+organigramaSuperiorId = 1
+nivelOrganigrama = 1
+tipoOrganigrama = Expediente
+idTipoOrganigrama = 1 - Don Edgar
+
+expedienteOrganigramaId = 2
+organigramaSuperiorId = 1
+nivelOrganigrama = 2
+tipoOrganigrama = Expediente
+idTipoOrganigrama = 47 - Ing. Juan Carlos
+
+expedienteOrganigramaId = 3
+organigramaSuperiorId = 2
+nivelOrganigrama = 3
+tipoOrganigrama = Expediente
+idTipoOrganigrama = 103 - Ivan Guerrero
+
+expedienteOrganigramaId = 4
+organigramaSuperiorId = 2
+nivelOrganigrama = 3
+tipoOrganigrama = Expediente
+idTipoOrganigrama = 2 - Marcelo
+
+expedienteOrganigramaId = 5
+organigramaSuperiorId = 3
+nivelOrganigrama = 4
+tipoOrganigrama = Grupo
+idTipoOrganigrama = 1 - Call Center
+
+expedienteOrganigramaId = 3
+organigramaSuperiorId = 2
+nivelOrganigrama = 3
+tipoOrganigrama = Expediente
+idTipoOrganigrama = 103 - Ivan Guerrero
+
+expedienteOrganigramaId = 4
+organigramaSuperiorId = 2
+nivelOrganigrama = 3
+tipoOrganigrama = Expediente
+idTipoOrganigrama = 2 - Marcelo
+
+Considerar hacer una sola tabla en forma de ramas, cada rama debe tener el numero de empleados hacia abajo, boton para agregar nuevo empleado a la rama y un boton de flechita hacia abajo para extender la rama
+
+Solo mostrar expedientes activos
+
+1. Don Edgar
+	1. Ing Juan Carlos (2, + crear grupo) ▾
+		1. Ivan Guerrero (1, + crear grupo) ▾
+			1. Call Center (3, + crear grupo) ▾
+				1. Katya (2, + crear grupo) ▾
+					1. Gerardo (0, + crear grupo) - Si no tiene no mostrar la flecha
+					2. Daniel (0, + crear grupo) - Si no tiene no mostrar la flecha
+			2. Industria (3, + crear grupo) ▾
+				1. Iván Cantarero (2, + crear grupo) ▾
+					1. Sergio (0, + crear grupo) - Si no tiene no mostrar la flecha
+					2. Leonel (0, + crear grupo) - Si no tiene no mostrar la flecha
+		2. Marcelo Romero (3, + crear grupo) ▾
+			1. Guillermo - Jefe de Informática (departamento) (2, + crear grupo) ▾
+				1. Robin (0, + crear grupo) - Si no tiene no mostrar la flecha
+				2. Marvin (0, + crear grupo) - Si no tiene no mostrar la flecha
+			2. Samuel - Analista programador (departamento) (0, + crear grupo) - Si no tiene no mostrar la flecha
+			3. Xavier - Analista programador (departamento) (0, + crear grupo) - Si no tiene no mostrar la flecha
+		3. Wendy
+
+AGREGAR UN NUEVO EXPEDIENTE AL LISTADO:
+	Lista general de Expedientes (empleados) que no estén asignados en ninguna rama.
+		1. Don Poppel.
+		2. El señor que acaba de venir donde don Poppel.
+		3. Edwin.
+		4. David.
+		...
+		N.
+
+MODAL + CREAR GRUPO:
+	- Seleccionar un grupo
+								badge + Otro (similar a Enfermedades/Alergia)
+		badge Otro:
+			- Nombre grupo
+			- Descripcion
+	+ Guardar
+
+- CRUD de organigrama grupos
+
+
+- Considerar Listas drag & drop para el agregar/editar/mover/transferir
+	- Para agregar un empleado a la rama mostrar del lado izquierdo el organigrama y del derecho los no asignados.
+		- El "insert" se debe hacer haciendo drag & drop de la lista derecha hacia la izquierda.
+	- Cuando suceda un evento drag & drop guardar al instante con Ajax (reconocer si fue insert, update).
+- No existirá el botón "eliminar" porque esto será automático cuando se dé de baja a un expediente o empleado por completo.
+- Si se crea un nuevo expediente, este no se verá reflejado de forma automática en el organigrama. Deberá volver a asignarlo.
+
+http://laborae.mx/wp-content/uploads/2015/02/1-Demo-Recursos-Humanos.mp4
+https://www.youtube.com/watch?v=KXe6h3Oqrks&ab_channel=FactorialHR
+
+Referencia drag & drop - SorteableJS: https://sortablejs.github.io/Sortable/#grid
+
+
+# Tablas de solicitudes
+
+//Amonestaciones
+
+CREATE TABLE `th_expediente_amonestaciones` (
+  `expedienteAmonestacionId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `expedienteIdJefe` bigint(20) DEFAULT NULL,
+  `expedienteId` bigint(20) DEFAULT NULL,
+  `fhAmonestacion` datetime DEFAULT NULL,
+  `tipoAmonestacion` varchar(20) DEFAULT NULL,
+  `suspension` varchar(10) DEFAULT NULL,
+  `diasSuspension` int(11) DEFAULT NULL,
+  `tipoAmonestacionId` bigint(20) DEFAULT NULL,
+  `descripcionFalta` varchar(200) DEFAULT NULL,
+  `consecuenciaFalta` varchar(200) DEFAULT NULL,
+  `advertenciaSiguienteFalta` varchar(200) DEFAULT NULL,
+  `fechaVigenciaInicio` datetime DEFAULT NULL,
+  `fechaVigenciaFin` datetime DEFAULT NULL,
+  `prsAdjuntoId` bigint(20) DEFAULT NULL,
+  `userAdd` varchar(25) DEFAULT NULL,
+  `fhAdd` datetime DEFAULT NULL,
+  `userEdit` varchar(25) DEFAULT NULL,
+  `fhEdit` datetime DEFAULT NULL,
+  `flgDelete` int(1) DEFAULT '0',
+  `userDelete` varchar(25) DEFAULT NULL,
+  `fhDelete` datetime DEFAULT NULL,
+  `obsCrud` longtext,
+  PRIMARY KEY (`expedienteAmonestacionId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+// Ausencias
+
+CREATE TABLE `th_expediente_ausencias` (
+  `expedienteAusenciaId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `expedienteIdAutoriza` bigint(20) DEFAULT NULL,
+  `expedienteId` bigint(20) DEFAULT NULL,
+  `fhSolicitud` datetime DEFAULT NULL,
+  `flgIngresoSolicitud` varchar(20) DEFAULT NULL,
+  `fechaAusencia` date DEFAULT NULL,
+  `horaAusenciaInicio` time DEFAULT NULL,
+  `horaAusenciaFin` time DEFAULT NULL,
+  `motivoAusencia` varchar(100) DEFAULT NULL,
+  `goceSueldo` varchar(10) DEFAULT NULL,
+  `userAdd` varchar(25) DEFAULT NULL,
+  `fhAdd` datetime DEFAULT NULL,
+  `userEdit` varchar(25) DEFAULT NULL,
+  `fhEdit` datetime DEFAULT NULL,
+  `flgDelete` int(1) DEFAULT '0',
+  `userDelete` varchar(25) DEFAULT NULL,
+  `fhDelete` datetime DEFAULT NULL,
+  `obsCrud` longtext,
+  PRIMARY KEY (`expedienteAusenciaId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+// Vacaciones
+
+CREATE TABLE `th_expedientes_vacaciones` (
+  `expedienteVacacionesId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `expedienteIdAutoriza` bigint(20) DEFAULT NULL,
+  `expedienteId` bigint(20) DEFAULT NULL,
+  `fhSolicitud` datetime DEFAULT NULL,
+  `flgIngresoSolicitud` varchar(20) DEFAULT NULL,
+  `periodoVacaciones` varchar(45) DEFAULT NULL,
+  `numDias` int(11) DEFAULT NULL,
+  `fechaInicio` date DEFAULT NULL,
+  `fechaFin` date DEFAULT NULL,
+  `estadoSolicitud` varchar(45) DEFAULT NULL,
+  `userAdd` varchar(25) DEFAULT NULL,
+  `fhAdd` datetime DEFAULT NULL,
+  `userEdit` varchar(25) DEFAULT NULL,
+  `fhEdit` datetime DEFAULT NULL,
+  `flgDelete` int(1) DEFAULT '0',
+  `userDelete` varchar(25) DEFAULT NULL,
+  `fhDelete` datetime DEFAULT NULL,
+  `obsCrud` longtext,
+  PRIMARY KEY (`expedienteVacacionesId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+// Incapacidades
+
+CREATE TABLE `th_expediente_incapacidades` (
+  `expedienteIncapacidadId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `expedienteId` bigint(20) DEFAULT NULL,
+  `fechaInicio` date DEFAULT NULL,
+  `fechaFin` date DEFAULT NULL,
+  `fechaExpedicion` date DEFAULT NULL,
+  `motivoIncapacidad` varchar(100) DEFAULT NULL,
+  `prsAdjuntoId` bigint(20) DEFAULT NULL,
+  `tipoIncapacidad` varchar(25) DEFAULT NULL,
+  `incapacidadSubsidio` varchar(25) DEFAULT NULL,
+  `userAdd` varchar(25) DEFAULT NULL,
+  `fhAdd` datetime DEFAULT NULL,
+  `userEdit` varchar(25) DEFAULT NULL,
+  `fhEdit` datetime DEFAULT NULL,
+  `flgDelete` int(1) DEFAULT '0',
+  `userDelete` varchar(25) DEFAULT NULL,
+  `fhDelete` datetime DEFAULT NULL,
+  `obsCrud` longtext,
+  PRIMARY KEY (`expedienteIncapacidadId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
