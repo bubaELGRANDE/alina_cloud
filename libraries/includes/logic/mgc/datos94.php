@@ -3,7 +3,7 @@ require('pdo-wrapper.php');
 
 use CloudDB\DB\Database;
 
-$flgServer = 0;
+$flgServer = 1;
 
 if ($flgServer == 1) {
     $options = [
