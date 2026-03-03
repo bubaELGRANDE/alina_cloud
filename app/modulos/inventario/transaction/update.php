@@ -1,23 +1,10 @@
 <?php
-/*
-      $update = [
-          'campo1'		=> "hola :o",
-          'campo2'     => "hola",
-      ];
-      $where = ['testId' => id]; // ids, soporta múltiple where
 
-      $cloud->update('test', $update, $where);
-*/
 if (isset($_SESSION["usuarioId"]) && isset($operation)) {
   switch ($operation) {
     case 'marca':
       if ($_POST['adjuntarLogo'] == "Si") {
-        /*
-         * POST:
-          hiddenFormData: update
-          typeOperation
-          operation
-        */
+
         $imagenNombre = $_FILES['adjunto']['name'];
 
         $ubicacion = "../../../../libraries/resources/images/logos/marcas/" . $imagenNombre;
@@ -34,7 +21,7 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
         }
 
         if ($flgSubir == 0) {
-          // Validación de formato nuevamente por si se evade la de Javascript
+
           echo "El archivo seleccionado no coincide con una imagen. Por favor vuelva a seleccionar una imagen con formato válido.";
         } else {
           $dataUrlArchivo = $cloud->row("
@@ -47,9 +34,9 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
           $oldUrl = "../../../../libraries/resources/images/" . $dataUrlArchivo->urlLogoMarca;
 
           if ($dataUrlArchivo->urlLogoMarca == "" || is_null($dataUrlArchivo->urlLogoMarca)) {
-            // No se habia subido imagen anteriormente
+
           } else {
-            // logos/marcas/archivo.extension
+
             $arrayUrl = explode("/", $dataUrlArchivo->urlLogoMarca);
 
             $newUrl = "../../../../libraries/resources/images/logos/" . $arrayUrl[1] . "/ (REEMPLAZADA " . date("d_m_Y H_i_s") . ") " . $arrayUrl[2];
@@ -57,7 +44,7 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
             rename($oldUrl, $newUrl);
           }
 
-          //verificar si existe la imagen
+
           $n = 1;
           $originalNombre = $imagenNombre;
           while ($n > 0) {
@@ -67,11 +54,11 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
               $ubicacion = $filename . "/" . $imagenNombre;
               $n += 1;
             } else {
-              // No existe, se mantiene el flujo normal
+
               $n = 0;
             }
           }
-          /* Upload file */
+
           if (move_uploaded_file($_FILES['adjunto']['tmp_name'], $ubicacion)) {
 
             $update = [
@@ -131,16 +118,7 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
       break;
 
     case 'unidad-medida':
-      /*
-         POST:
-        hiddenFormData: update
-        typeOperation
-        operation
-        nombreUnidadMedida
-        abreviatura
-        tipoMagnitud
-        codigoMH
-      */
+
       $queryExist = "
 	        		SELECT 
 	        			nombreUnidadMedida
@@ -175,9 +153,7 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
       break;
 
     case 'habilitar-marca':
-      /**
-       * $_POST['id'] => marcaId^nombreMarca
-       */
+
       $tableDataArray = explode('^', $_POST['id']);
       $update = [
         'estadoMarca' => 'Activa'
@@ -221,16 +197,7 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
       break;
 
     case "adjuntoProducto":
-      /*
-        POST
-        hiddenFormData
-        hiddenFormData
-        operation
-        adjuntoId
-        personaId
-        tipoAdjunto
-        descripcionAdjunto
-      */
+
 
       $update = [
         'tipoProductoAdjunto' => $_POST["tipoAdjunto"],
@@ -246,15 +213,7 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
       break;
 
     case "especificacion":
-      /*
-        hiddenFormData
-        typeOperation
-        operation
-        productoId
-        nombreEsp
-        tipoEspecificacionN
-        tipoMagnitud
-      */
+
 
 
       $tipoMagnitud = NULL;
@@ -274,6 +233,445 @@ if (isset($_SESSION["usuarioId"]) && isset($operation)) {
 
       echo "success";
       break;
+    case 'actualizar-costo-oro':
+
+      // 1) Obtener último precio del oro
+      $dataPrecioOro = $cloud->row("SELECT precioBid, precioAsk, fhRegistro
+        FROM bit_historial_precios_metal
+        WHERE metal = ? AND monedaId = ? AND flgDelete = ?
+        ORDER BY fhRegistro DESC
+        LIMIT 1", ['ORO', 1, 0]);
+
+      if (!$dataPrecioOro) {
+        echo "error: no se encontró el precio del oro";
+        break;
+      }
+
+      $precioPorOnzaTroy = (float) $dataPrecioOro->precioAsk;
+      $FACTOR_ONZA_A_GRAMO = 31.1035;
+      $PUREZA_14K = 14 / 24;
+      $alpha = 0.2;
+
+      // 2) Obtener productos con peso (catProdEspecificacionId = 5) y su precio activo actual
+      $dataProductos = $cloud->rows("SELECT
+          p.productoId,
+          p.nombreProducto,
+          ep.valorEspecificacion AS pesoValor,
+          ep.unidadMedidaId,
+          pp.productoPrecioId,
+          pp.costoPromedio AS costoPrevProm,
+          pp.costoUnitario AS costoPrevUnit,
+          pp.precioVenta,
+          pp.precioVentaIVA
+        FROM prod_productos p
+        JOIN prod_productos_especificaciones ep
+          ON ep.productoId = p.productoId
+          AND ep.catProdEspecificacionId = ?
+          AND ep.flgDelete = ?
+        LEFT JOIN prod_productos_precios pp
+          ON pp.productoId = p.productoId
+          AND pp.estadoPrecio = 'Activo'
+          AND pp.flgDelete = ?
+        WHERE p.flgDelete = ?", [5, 0, 0, 0]);
+
+      if (!$dataProductos) {
+        echo "ok: no hay productos para actualizar";
+        break;
+      }
+
+      $precioPorGramoPuro = $precioPorOnzaTroy / $FACTOR_ONZA_A_GRAMO;
+      $productosActualizados = 0;
+
+      try {
+        foreach ($dataProductos as $dp) {
+
+          // Solo procesar si la unidad de medida es gramos (unidadMedidaId = 52)
+          if ((int) $dp->unidadMedidaId !== 52) {
+            continue;
+          }
+
+          $costoNuevo = $precioPorGramoPuro * (float) $dp->pesoValor * $PUREZA_14K;
+          $costoPrev = (float) ($dp->costoPrevProm ?? 0);
+
+          if ($costoPrev <= 0) {
+            $costoPrev = (float) ($dp->costoPrevUnit ?? 0);
+          }
+
+          // Suavizado exponencial para evitar cambios bruscos
+          $costoSuav = ($costoPrev > 0)
+            ? ($alpha * $costoNuevo + (1 - $alpha) * $costoPrev)
+            : $costoNuevo;
+
+          // Piso: nunca bajar del costo anterior
+          $piso = $costoPrev > 0 ? $costoPrev : 0;
+          $costoFinal = max($piso, $costoSuav);
+
+          // 3) Desactivar el precio actual (si existe) para mantener historial
+          if (!empty($dp->productoPrecioId)) {
+            $cloud->update(
+              'prod_productos_precios',
+              [
+                'estadoPrecio' => 'Inactivo',
+                'userEdit' => $_SESSION['usuario'] ?? null,
+                'fhEdit' => $fhActual
+              ],
+              ['productoPrecioId' => $dp->productoPrecioId]
+            );
+          }
+
+          // 4) Insertar nuevo precio como Activo
+          $cloud->insert(
+            'prod_productos_precios',
+            [
+              'productoId' => $dp->productoId,
+              'personaId' => $_SESSION["personaId"] ?? null,
+              'precioVenta' => $dp->precioVenta ?? 0,
+              'precioVentaIVA' => $dp->precioVentaIVA ?? 0,
+              'costoUnitario' => round($costoFinal, 8),
+              'costoPromedio' => round($costoFinal, 8),
+              'estadoPrecio' => 'Activo',
+              'obsPrecio' => 'Actualizado automáticamente según precio del oro',
+              'userAdd' => $_SESSION['usuario'] ?? null,
+              'fhAdd' => $fhActual
+            ]
+          );
+
+          $productosActualizados++;
+        }
+
+        $cloud->writeBitacora("movUpdate", "(" . $fhActual . ") Actualizó costos de $productosActualizados productos de oro según precio: $" . number_format($precioPorOnzaTroy, 2) . "/oz troy");
+        echo 'success';
+
+      } catch (Throwable $e) {
+        echo "error: " . $e->getMessage();
+      }
+      break;
+
+    case 'actualizar-precio-venta':
+      // Actualización individual de precio de venta desde la tabla
+      // Recibe: productoPrecioId, productoId, precioVenta (sin IVA), precioVentaIVA
+
+      if (empty($_POST['productoPrecioId']) || empty($_POST['productoId'])) {
+        echo "error: faltan datos requeridos";
+        break;
+      }
+
+      $productoPrecioId = (int) $_POST['productoPrecioId'];
+      $productoId = (int) $_POST['productoId'];
+      $precioVenta = (float) $_POST['precioVenta'];
+      $precioVentaIVA = (float) $_POST['precioVentaIVA'];
+
+      // Obtener el precio actual para copiar los costos
+      $precioActual = $cloud->row("
+        SELECT costoUnitarioFOB, costoUnitario, costoPromedio, obsPrecio
+        FROM prod_productos_precios
+        WHERE productoPrecioId = ? AND flgDelete = 0
+      ", [$productoPrecioId]);
+
+      if (!$precioActual) {
+        echo "error: no se encontró el precio actual";
+        break;
+      }
+
+      // Validar que el precio no sea menor al costo + 1%
+      $costoBase = (float) $precioActual->costoPromedio > 0 
+        ? (float) $precioActual->costoPromedio 
+        : (float) $precioActual->costoUnitario;
+      $precioMinimo = $costoBase * 1.01;
+
+      if ($precioVenta < $precioMinimo) {
+        echo "error: el precio de venta no puede ser menor a $" . number_format($precioMinimo, 2) . " (costo + 1%)";
+        break;
+      }
+
+      try {
+        // 1) Desactivar el precio actual
+        $cloud->update(
+          'prod_productos_precios',
+          [
+            'estadoPrecio' => 'Inactivo',
+            'userEdit' => $_SESSION['usuario'] ?? null,
+            'fhEdit' => $fhActual
+          ],
+          ['productoPrecioId' => $productoPrecioId]
+        );
+
+        // 2) Insertar nuevo precio como Activo
+        $cloud->insert(
+          'prod_productos_precios',
+          [
+            'productoId' => $productoId,
+            'personaId' => $_SESSION['personaId'] ?? null,
+            'precioVenta' => round($precioVenta, 8),
+            'precioVentaIVA' => round($precioVentaIVA, 8),
+            'costoUnitarioFOB' => $precioActual->costoUnitarioFOB,
+            'costoUnitario' => $precioActual->costoUnitario,
+            'costoPromedio' => $precioActual->costoPromedio,
+            'estadoPrecio' => 'Activo',
+            'obsPrecio' => 'Actualización manual de precio de venta',
+            'userAdd' => $_SESSION['usuario'] ?? null,
+            'fhAdd' => $fhActual
+          ]
+        );
+
+        // Obtener nombre del producto para bitácora
+        $dataProd = $cloud->row("SELECT nombreProducto FROM prod_productos WHERE productoId = ?", [$productoId]);
+        $nombreProd = $dataProd->nombreProducto ?? 'ID:' . $productoId;
+
+        $cloud->writeBitacora(
+          "movUpdate",
+          "(" . $fhActual . ") Actualizó precio de venta del producto: " . $nombreProd . 
+          " - Nuevo precio: $" . number_format($precioVenta, 2) . " (con IVA: $" . number_format($precioVentaIVA, 2) . ")"
+        );
+
+        echo 'success';
+
+      } catch (Throwable $e) {
+        echo "error: " . $e->getMessage();
+      }
+      break;
+
+    case "producto":
+
+      if (($_POST["typeOperation"] ?? "") !== "update") {
+        echo "error: typeOperation inválido";
+        break;
+      }
+
+      if (empty($_POST["productoId"])) {
+        echo "error: productoId es obligatorio";
+        break;
+      }
+
+      $productoId = (int) $_POST["productoId"];
+
+
+      $prod = $cloud->row(
+        "SELECT productoId, codInterno 
+     FROM prod_productos 
+     WHERE productoId = ? AND flgDelete = 0",
+        [$productoId]
+      );
+
+      if (!$prod) {
+        echo "error: producto no existe";
+        break;
+      }
+
+
+      if (empty($_POST["sku"])) {
+        echo "error: el SKU es obligatorio";
+        break;
+      }
+
+      $sku = trim($_POST["sku"]);
+
+
+      $skuExiste = $cloud->row(
+        "SELECT productoId 
+     FROM prod_productos 
+     WHERE codInterno = ? AND productoId <> ? AND flgDelete = 0",
+        [$sku, $productoId]
+      );
+
+      if ($skuExiste) {
+        echo "error: el SKU ya está registrado";
+        break;
+      }
+
+
+      if (empty($_POST["nombre"])) {
+        echo "error: el nombre es obligatorio";
+        break;
+      }
+      if (empty($_POST["categoria"])) {
+        echo "error: la categoría es obligatoria";
+        break;
+      }
+      if (empty($_POST["marcaId"])) {
+        echo "error: la marca es obligatoria";
+        break;
+      }
+      if (empty($_POST["udm"])) {
+        echo "error: la unidad de medida es obligatoria";
+        break;
+      }
+      if (empty($_POST["tipo"])) {
+        echo "error: el tipo de producto es obligatorio";
+        break;
+      }
+
+
+      $updateProducto = [
+        "codFabricante" => $_POST["codFabricante"] ?? null,
+        "codInterno" => $sku,
+        "inventarioCategoriaPrincipalId" => $_POST["categoria"],
+        "nombreProducto" => $_POST["nombre"],
+        "descripcionProducto" => $_POST["descripcion"] ?? null,
+        "marcaId" => $_POST["marcaId"],
+        "unidadMedidaId" => $_POST["udm"],
+        "tipoProductoId" => $_POST["tipo"],
+        "paisIdOrigen" => $_POST["pais"] ?? null,
+        "obsEstadoProducto" => $_POST["obs"] ?? null,
+
+
+        "userEdit" => $_SESSION["usuario"] ?? null,
+        "fhEdit" => $fhActual,
+      ];
+
+
+      if (!empty($_POST["estado"])) {
+        $updateProducto["estadoProducto"] = $_POST["estado"];
+      }
+
+      $ok = $cloud->update("prod_productos", $updateProducto, ["productoId" => $productoId]);
+      if (!$ok) {
+        echo "error: no se pudo actualizar el producto";
+        break;
+      }
+
+      $cloud->writeBitacora("movUpdate", "(" . $fhActual . ") Actualizó el producto " . ($_POST["nombre"] ?? ""));
+
+
+      $tags = $_POST["tags"] ?? [];
+      if (!is_array($tags))
+        $tags = [];
+
+      $tagsDb = $cloud->rows(
+        "SELECT inventarioCategoriaId
+     FROM prod_productos_categorias
+     WHERE productoId = ? AND flgDelete = 0",
+        [$productoId]
+      );
+
+      $setDb = [];
+      foreach ($tagsDb as $r)
+        $setDb[(string) $r->inventarioCategoriaId] = true;
+
+      $setIn = [];
+      foreach ($tags as $t)
+        $setIn[(string) $t] = true;
+
+
+      foreach ($setDb as $catId => $_) {
+        if (!isset($setIn[$catId])) {
+          $cloud->update("prod_productos_categorias", [
+            "flgDelete" => 1,
+            "userDelete" => $_SESSION["usuario"] ?? null,
+            "fhDelete" => $fhActual
+          ], [
+            "productoId" => $productoId,
+            "inventarioCategoriaId" => $catId
+          ]);
+        }
+      }
+
+
+      foreach ($setIn as $catId => $_) {
+
+
+        $exSoft = $cloud->row(
+          "SELECT productoId 
+       FROM prod_productos_categorias 
+       WHERE productoId = ? AND inventarioCategoriaId = ?",
+          [$productoId, $catId]
+        );
+
+        if ($exSoft) {
+          $cloud->update("prod_productos_categorias", [
+            "flgDelete" => 0,
+            "userEdit" => $_SESSION["usuario"] ?? null,
+            "fhEdit" => $fhActual
+          ], [
+            "productoId" => $productoId,
+            "inventarioCategoriaId" => $catId
+          ]);
+        } else {
+          $cloud->insert("prod_productos_categorias", [
+            "productoId" => $productoId,
+            "inventarioCategoriaId" => $catId
+          ]);
+        }
+      }
+
+
+      $esps = $_POST["especificaciones"] ?? [];
+      if (!is_array($esps))
+        $esps = [];
+
+      $dbEsps = $cloud->rows(
+        "SELECT catProdEspecificacionId
+     FROM prod_productos_especificaciones
+     WHERE productoId = ? AND flgDelete = 0",
+        [$productoId]
+      );
+
+      $mapDb = [];
+      foreach ($dbEsps as $r)
+        $mapDb[(string) $r->catProdEspecificacionId] = true;
+
+      $mapIn = [];
+
+      foreach ($esps as $esp) {
+        if (empty($esp["id"]))
+          continue;
+
+        $espId = (string) $esp["id"];
+        $valor = $esp["valor"] ?? null;
+        $udmEsp = $esp["unidadMedida"] ?? null;
+
+
+        if ($valor === null || trim((string) $valor) === "") {
+          continue;
+        }
+
+        $mapIn[$espId] = true;
+
+
+        $exEsp = $cloud->row(
+          "SELECT productoId 
+       FROM prod_productos_especificaciones
+       WHERE productoId = ? AND catProdEspecificacionId = ?",
+          [$productoId, $espId]
+        );
+
+        if ($exEsp) {
+          $cloud->update("prod_productos_especificaciones", [
+            "valorEspecificacion" => $valor,
+            "unidadMedidaId" => $udmEsp,
+            "flgDelete" => 0,
+            "userEdit" => $_SESSION["usuario"] ?? null,
+            "fhEdit" => $fhActual
+          ], [
+            "productoId" => $productoId,
+            "catProdEspecificacionId" => $espId
+          ]);
+        } else {
+          $cloud->insert("prod_productos_especificaciones", [
+            "productoId" => $productoId,
+            "catProdEspecificacionId" => $espId,
+            "valorEspecificacion" => $valor,
+            "unidadMedidaId" => $udmEsp
+          ]);
+        }
+      }
+
+
+      foreach ($mapDb as $espId => $_) {
+        if (!isset($mapIn[$espId])) {
+          $cloud->update("prod_productos_especificaciones", [
+            "flgDelete" => 1,
+            "userDelete" => $_SESSION["usuario"] ?? null,
+            "fhDelete" => $fhActual
+          ], [
+            "productoId" => $productoId,
+            "catProdEspecificacionId" => $espId
+          ]);
+        }
+      }
+      echo "success";
+      break;
+
     default:
       echo "No se encontró la operación.";
       break;

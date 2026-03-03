@@ -9,6 +9,13 @@ $funtionObtenerOro = htmlspecialchars(json_encode(
     )
 ));
 
+$funcionCostos = htmlspecialchars(json_encode(
+    array(
+        "typeOperation" => "update",
+        "operation" => "updatate-costo"
+    )
+));
+
 // categorías principales
 $categorias = $cloud->rows("
     SELECT inventarioCategoriaId, nombreCategoria
@@ -22,30 +29,50 @@ $marcas = $cloud->rows("
     FROM cat_inventario_marcas
     WHERE flgDelete = 0
 ");
-
 ?>
+
 <div class="container py-4">
-    <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">Precios de venta</h3>
-        <button id="btn" type="button" class="ml-2 btn btn-primary" onclick='calcularCosto(<?= $funtionObtenerOro ?>)'>
-            <i class="fas fa-plus-circle"></i> Actualizar Costo Oro
-        </button>
+
+    <!-- Encabezado + acciones -->
+    <div class="row align-items-center g-2 mb-3">
+        <div class="col-12 col-lg">
+            <h3 class="fw-bold mb-0">Precios de venta</h3>
+        </div>
+
+        <div class="col-12 col-lg-auto">
+            <!-- En móvil: stack / En escritorio: inline -->
+            <div class="d-grid d-lg-flex gap-2">
+                <button type="button" class="btn btn-outline-warning" onclick="modalPrecioOro();">
+                    <i class="fas fa-coins me-1"></i> Ver Precio Actual
+                </button>
+                <!--<button type="button" class="btn btn-primary" onclick='ActualizarValorOro(<?= $funtionObtenerOro ?>)'>
+                    <i class="fas fa-sync-alt me-1"></i> Actualizar Costo Oro
+                </button>-->
+                <button type="button" class="btn btn-primary" onclick='changePage(`<?php echo $_SESSION["currentRoute"]; ?>`, `precio-venta`, ``)'>
+                    <i class="fas fa-sync-alt me-1"></i> Actualizar Precios de venta
+                </button>
+                <button type="button" class="btn btn-outline-primary" onclick='updateCostos(<?= $funcionCostos ?>)'>
+                    <i class="fas fa-money me-1"></i> Actualizar costos productos
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- FILTROS -->
-    <div class="row mb-3">
-        <div class="col-md-3 mb-2">
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6 col-lg-3">
             <label for="fSku" class="form-label mb-1">SKU / Código</label>
             <input type="text" id="fSku" class="form-control form-control-sm" placeholder="Buscar por código">
         </div>
-        <div class="col-md-3 mb-2">
+
+        <div class="col-12 col-md-6 col-lg-3">
             <label for="fNombre" class="form-label mb-1">Nombre producto</label>
             <input type="text" id="fNombre" class="form-control form-control-sm" placeholder="Buscar por nombre">
         </div>
-        <div class="col-md-3 mb-2">
+
+        <div class="col-12 col-md-6 col-lg-3">
             <label for="fCategoria" class="form-label mb-1">Categoría principal</label>
-            <select id="fCategoria" class="form-control form-control-sm">
+            <select id="fCategoria" class="form-select form-select-sm">
                 <option value="">Todas</option>
                 <?php foreach ($categorias as $c) { ?>
                     <option value="<?= $c->inventarioCategoriaId; ?>">
@@ -54,9 +81,10 @@ $marcas = $cloud->rows("
                 <?php } ?>
             </select>
         </div>
-        <div class="col-md-3 mb-2">
+
+        <div class="col-12 col-md-6 col-lg-3">
             <label for="fMarca" class="form-label mb-1">Marca</label>
-            <select id="fMarca" class="form-control form-control-sm">
+            <select id="fMarca" class="form-select form-select-sm">
                 <option value="">Todas</option>
                 <?php foreach ($marcas as $m) { ?>
                     <option value="<?= $m->marcaId; ?>">
@@ -67,16 +95,18 @@ $marcas = $cloud->rows("
         </div>
 
         <!-- Botón reset -->
-        <div class="col-12 mt-2 text-end">
-            <button type="button" id="btnResetFiltros" class="btn btn-sm btn-secondary">
-                <i class="fas fa-eraser"></i> Limpiar filtros
-            </button>
+        <div class="col-12">
+            <div class="d-grid d-sm-flex justify-content-sm-end">
+                <button type="button" id="btnResetFiltros" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-eraser me-1"></i> Limpiar filtros
+                </button>
+            </div>
         </div>
     </div>
 
-
+    <!-- TABLA (DataTable normal) -->
     <div class="table-responsive">
-        <table id="tblPrecio" class="table table-hover" style="width: 100%;">
+        <table id="tblPrecio" class="table table-hover table-sm align-middle w-100">
             <thead>
                 <tr id="filterboxrow">
                     <th>#</th>
@@ -91,9 +121,35 @@ $marcas = $cloud->rows("
             <tbody></tbody>
         </table>
     </div>
+
 </div>
+
 <script>
-    function calcularCosto(frmData) {
+    function modalPrecioOro() {
+        loadModal(
+            "modal-container",
+            {
+                modalDev: "-1",
+                modalSize: 'lg',
+                modalTitle: 'Precio Actual del Oro',
+                modalForm: 'precioMetalActual',
+                formData: 'view',
+                buttonCancelShow: true,
+                buttonCancelText: 'Cerrar',
+                buttonCancelIcon: 'times'
+            }
+        );
+    }
+
+    function ActualizarValorOro(frmData) {
+        asyncData("<?= $_SESSION['currentRoute']; ?>transaction/operation/", frmData, function (resp) {
+            const t = (typeof resp === 'string') ? resp.trim() : (resp?.toString?.().trim() || '');
+            if (t === 'success') mensaje('Éxito', 'Operación completada.', 'success');
+            else mensaje('Error', t || 'Ocurrió un error.', 'error');
+        });
+    }
+
+    function updateCostos(frmData) {
         asyncData("<?= $_SESSION['currentRoute']; ?>transaction/operation/", frmData, function (resp) {
             const t = (typeof resp === 'string') ? resp.trim() : (resp?.toString?.().trim() || '');
             if (t === 'success') mensaje('Éxito', 'Operación completada.', 'success');
@@ -116,15 +172,7 @@ $marcas = $cloud->rows("
                 }
             },
             autoWidth: false,
-            columns: [
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            ],
+            columns: [null, null, null, null, null, null, null],
             columnDefs: [
                 { orderable: false, targets: [1, 2, 6] }
             ],
@@ -148,11 +196,7 @@ $marcas = $cloud->rows("
             $('#fNombre').val('');
             $('#fCategoria').val('');
             $('#fMarca').val('');
-
-            // opcional: limpiar búsqueda interna de DT (si en algún momento activas search global)
             tblPrecio.search('');
-
-            // recargar tabla desde la página 1 sin filtros
             tblPrecio.ajax.reload();
         });
     });

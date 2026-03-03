@@ -39,6 +39,8 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold">Gestión de productos</h3>
         <!-- Botones de cambio de vista -->
+        <button id="btn" type="button" class="ml-2 btn btn-primary" onclick="verPDF()">
+            <i class="fas fa-plus-circle"></i> Reporte de inventario</button>
         <button id="btn" type="button" class="ml-2 btn btn-primary"
             onclick='changePage(`<?php echo $_SESSION["currentRoute"]; ?>`, `gestion-productos`, `productoId=0`)'>
             <i class="fas fa-plus-circle"></i> Nuevo Producto</button>
@@ -90,6 +92,22 @@
 
 <script>
     // Función para cargar tarjetas (la dejo global igual que la tenías)
+
+    function verPDF() {
+        loadModal(
+            "modal-container",
+            {
+                modalDev: "-1",
+                modalSize: 'fullscreen',
+                modalTitle: 'Reporte de inventario',
+                modalForm: 'reportesInventario',
+                buttonAcceptShow: false,
+                buttonCancelShow: true,
+                buttonCancelText: 'Cerrar'
+            }
+        );
+    }
+
     function cargarTarjetas() {
         asyncData(
             "<?php echo $_SESSION['currentRoute']; ?>content/divs/divProductoTarjetas",

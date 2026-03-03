@@ -72,7 +72,7 @@ $output = ['data' => []];
 foreach ($dataPrecio as $p) {
     $n++;
 
-    $codigo = '<b><i class="fas fa-barcode"></i> Código: </b>' . $p->codInterno;
+    $codigo = '<b><i class="fas fa-barcode"></i> Código: </b>' . $p->codInterno . '<br><b>ProductoId: </b>' . $p->productoId;
 
     // TODO: aquí va en UNA SOLA LÍNEA: NOMBRE – CATEGORÍA – MARCA
     $producto = '<b>Descripción: </b>' . $p->nombreProducto

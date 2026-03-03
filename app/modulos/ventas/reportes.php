@@ -36,9 +36,6 @@
                     $arrayPost = array("nombreInputSelect");
                     $arrayPostMultiple = array("nombreSelectMultiple");        
                 break;
-                case 'inventario-general':
-                    // No se necesitan POST para este reporte, solamente apuntar al archivo con el route creado arriba
-                break;
 
                 default:
                     $output = '

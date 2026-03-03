@@ -3,7 +3,7 @@ require('pdo-wrapper.php');
 
 use CloudDB\DB\Database;
 
-$flgServer = 1;
+$flgServer = 0;
 
 if ($flgServer == 1) {
     $options = [
@@ -15,7 +15,7 @@ if ($flgServer == 1) {
 } else {
     $options = [
         'host' => "localhost",
-        'database' => "seam_global",
+        'database' => "u214874994_alina_cloud",
         'username' => "root",
         'password' => ""
     ];
