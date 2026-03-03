@@ -4,6 +4,7 @@ require_once("../../../../../libraries/includes/logic/mgc/datos94.php");
 ?>
 <input type="hidden" name="extension" value="pdf">
 <input type="hidden" name="file" value="inventario-general">
+<input type="hidden" name="partidaContableId" value="1">
 <div id="divReporte"></div>
 
 <script>
